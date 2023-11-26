@@ -47,3 +47,6 @@ predict_disease <- function(Symptom_1, Symptom_2, Symptom_3, Symptom_4,
   predictions <- predict(loaded_random_forest_model, input_data)
   return(predictions)
 }
+
+# Run the plumber API
+plumber::plumb("runplumber.R")$run(port=8000)
