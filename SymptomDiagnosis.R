@@ -1,10 +1,10 @@
 ### Code ----
 library(readr)
 # Read the CSV file with read.csv
-stock_ror_dataset <- read.csv("data/medicaldataset.csv", na.strings = "NA")
+dataset <- read.csv("data/communicable_dataset.csv", na.strings = "NA")
 
 # Convert the "Disease" column to a factor with specified levels
-stock_ror_dataset$Disease <- factor(stock_ror_dataset$Disease, levels = c(
+dataset$Disease <- factor(dataset$Disease, levels = c(
   "Allergy", "GERD", "Chronic cholestasis", "Drug Reaction", "Peptic ulcer disease",
   "AIDS", "Diabetes", "Gastroenteritis", "Bronchial Asthma", "Hypertension",
   "Migraine", "Cervical spondylosis", "Paralysis (brain hemorrhage)", "Jaundice",
@@ -17,4 +17,4 @@ stock_ror_dataset$Disease <- factor(stock_ror_dataset$Disease, levels = c(
 ))
 
 # View the first few rows of the dataset
-head(stock_ror_dataset)
+head(dataset)
