@@ -17,9 +17,10 @@ When you click the **Knit** button a document will be generated that includes bo
 
 LOADING DATASET
 ```{r }
-dataset <- read.csv("data/communicable_dataset.csv", na.strings = "NA")
-# View the first few rows of the dataset
-head(dataset)
+library(readr)
+dataset <- read_csv("D:/Kaguash/Downloads/Symptom-Disease-ClassifierBI-Project/data/communicable_dataset.csv")
+View(dataset)
+
 ```
 
 Issue 2
@@ -36,7 +37,7 @@ mode_disease <- names(which.max(disease_frequencies))
 sd_disease_length <- sd(nchar(dataset$Disease))
 
 # Measure of Relationship
-disease_association <- chisq.test(dataset$Disease)
+#disease_association <- chisq.test(dataset$Disease)
 
 # Print results
 print(disease_frequencies)
@@ -44,7 +45,7 @@ print(mean_disease_length)
 print(median_disease_length)
 print(mode_disease)
 print(sd_disease_length)
-print(disease_association)
+#print(disease_association)
 head(dataset)
 
 # Check unique levels in Disease and Symptom_1
@@ -60,7 +61,7 @@ Issue 3
 
 ```{r }
 # Load your dataset (replace 'your_data.csv' with your actual data file)
-data <- read.csv("data/communicable_dataset.csv")
+data <- read_csv("D:/Kaguash/Downloads/Symptom-Disease-ClassifierBI-Project/data/communicable_dataset.csv")
 
 # Convert character data type to factor data type
 data[, c("Disease", "Symptom_1", "Symptom_2", "Symptom_3", "Symptom_4", "Symptom_5", "Symptom_6", "Symptom_7", "Symptom_8")] <- lapply(data[, c("Disease", "Symptom_1", "Symptom_2", "Symptom_3", "Symptom_4", "Symptom_5", "Symptom_6", "Symptom_7", "Symptom_8")], as.factor)
@@ -95,25 +96,16 @@ Issue 5
 ```{r }
 # Load required libraries
 ## plyr ----
-if (require("plyr")) {
-  require("plyr")
-} else {
-  install.packages("plyr", dependencies = TRUE,
-                   repos = "https://cloud.r-project.org")
-}
+library(plyr)
 
-## dplyr ----
-if (require("dplyr")) {
-  require("dplyr")
-} else {
-  install.packages("dplyr", dependencies = TRUE,
-                   repos = "https://cloud.r-project.org")
-}
+
+library(dplyr)
+
 library(caret)
 library(randomForest)  # You can choose another classification algorithm
 
-# Load your dataset (replace 'your_data.csv' with your actual data file)
-data <- read.csv("data/communicable_dataset.csv")
+
+data <- read_csv("D:/Kaguash/Downloads/Symptom-Disease-ClassifierBI-Project/data/communicable_dataset.csv")
 
 # Remove unnecessary columns
 data <- data[, c("Disease", "Symptom_1", "Symptom_2", "Symptom_3", "Symptom_4", "Symptom_5", "Symptom_6", "Symptom_7", "Symptom_8")]
@@ -122,9 +114,6 @@ data <- data[, c("Disease", "Symptom_1", "Symptom_2", "Symptom_3", "Symptom_4", 
 data[, c("Disease", "Symptom_1", "Symptom_2", "Symptom_3", "Symptom_4", "Symptom_5", "Symptom_6", "Symptom_7", "Symptom_8")] <- lapply(data[, c("Disease", "Symptom_1", "Symptom_2", "Symptom_3", "Symptom_4", "Symptom_5", "Symptom_6", "Symptom_7", "Symptom_8")], as.factor)
 
 #Data transformation
-# Replace missing values with the mode of the respective column
-data <- data %>% 
-    mutate_at(vars(Symptom_1:Symptom_8), ~ifelse(is.na(.), mode(., na.rm = TRUE), .))
 
 #confirmation of missing data
 sapply(data, function(x) sum(is.na(x)))
@@ -151,11 +140,32 @@ test <- data[-trainIndex, ]
 library(rpart)
 model_decision_tree <- rpart(Disease ~ ., data = train)
 
+# Remove rows with missing values
+train <- na.omit(train)
+# Impute missing values in 'train' dataset (using mean as an example)
+train$Disease <- ifelse(is.na(train$Disease), mean(train$Disease, na.rm = TRUE), train$Disease)
+# Build random forest model after handling missing values
+library(randomForest)
 # Train a random forest model on the training data
-model <- randomForest(Disease ~ ., data = train)
+model_decision_tree <- randomForest(Disease ~ ., data = train)
 
 # Use the trained model to make predictions on the test data
-predictions <- predict(model, test)
+#predictions <- predict(model, test)
+# Check levels of categorical variables in the training dataset
+sapply(train, function(x) if(is.factor(x)) levels(x))
+
+# Check levels of categorical variables in the test dataset
+sapply(test, function(x) if(is.factor(x)) levels(x))
+
+# Ensure factor levels in test match those in train
+for (col in names(train)) {
+  if (is.factor(train[[col]]) && is.factor(test[[col]])) {
+    levels(test[[col]]) <- levels(train[[col]])
+  }
+}
+
+#predictions <- predict(model, test)
+
 
 # Compare model performance using resampling methods
 library(caret)
