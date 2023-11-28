@@ -8,7 +8,9 @@ library(readr)
 library(mice)
 
 # Read the CSV file with read.csv
-dataset <- read.csv("data/communicable_dataset.csv", na.strings = "NA")
+library(readr)
+dataset <- read_csv("data/communicable_dataset.csv")
+View(communicable_dataset)
 
 # View the first few rows of the dataset
 head(dataset)
@@ -27,7 +29,7 @@ mode_disease <- names(which.max(disease_frequencies))
 sd_disease_length <- sd(nchar(dataset$Disease))
 
 # Measure of Relationship
-disease_association <- chisq.test(dataset$Disease)
+#disease_association <- chisq.test(dataset$Disease)
 
 # Print results
 print(disease_frequencies)
@@ -35,7 +37,7 @@ print(mean_disease_length)
 print(median_disease_length)
 print(mode_disease)
 print(sd_disease_length)
-print(disease_association)
+#print(disease_association)
 
 # Check unique levels in Disease and Symptom_1
 table(dataset$Disease)
